@@ -9,22 +9,25 @@ int moistureValue = 0;
 void setup() {
   Serial.begin(9600);
 }
-void loop() {
-  if(Serial.available() > 0 ){
-    char data = Serial.read();
-    char str[2];
-    str[0] = data;
-    str[1] = '\0';
-    Serial.print(str);
+void loop()
+{
+  if (Serial.available())
+  {
+    int chk = DHT.read11(DHT11_PIN);
+    char ch = Serial.read();
+    if (ch == '1')
+    {
+      Serial.println(DHT.temperature);
+    }
+    else if (ch == '2')
+    {
+      Serial.println(DHT.humidity);
+    }
+    else if (ch == '3')
+    {
+      moistureValue = analogRead(MOISTURE_SENSOR_PIN);
+      Serial.println(moistureValue);
+    }
   }
-  
-  int chk = DHT.read11(DHT11_PIN);
-  moistureValue = analogRead(MOISTURE_SENSOR_PIN);
-  Serial.print("DHT11 Temperature = ");
-  Serial.println(DHT.temperature);
-  Serial.print("DHT11 Humidity = ");
-  Serial.println(DHT.humidity);
-  Serial.print("Moisture Value = ");
-  Serial.println(moistureValue);
   delay(DELA);
 }
