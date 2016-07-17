@@ -75,6 +75,15 @@ def setColor(rgb = []):
 	GREEN.ChangeDutyCycle(rgb[1])
 	BLUE.ChangeDutyCycle(rgb[2])
 
+def lightPoll():
+	if growLocation.previous_rising(ephem.Sun()) <= growLocation.date <= growLocation.next_setting(ephem.Sun()):
+		pinControl(lightRelay, 1)
+		print("Day")
+	elif growLocation.previous_setting(ephem.Sun()) <= growLocation.date <= growLocation.next_rising(ephem.Sun()):
+		pinControl(lightRelay,0)
+		print("Night")
+	return
+
 def pinControl(arg, state):
 	if state == 1:
 		GPIO.output(arg, GPIO.LOW)
@@ -124,3 +133,4 @@ while True:
 	roomTemp()
 	roomHumid()
 	soilMoisture()
+	lightPoll()
