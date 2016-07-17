@@ -77,18 +77,27 @@ def setColor(rgb = []):
 	BLUE.ChangeDutyCycle(rgb[2])
 
 def roomTemp():
-	arduino.write('1')
+	arduino.write('1'.encode())
+	data = arduino.readline()
+	if data:
+		print (data)
 	return
 
 def roomHumid():
-	arduino.write('2')
+	arduino.write('2'.encode())
+	data = arduino.readline()
+	if data:
+		print (data)
 	return
 
 def soilTemp():
-	arduino.write('3')
+	arduino.write('3'.encode())
+	data = arduino.readline()
+	if data:
+		print (data)
 	return
 
-white True:
-	data = arduino.readLine()
-	if data:
-		print data.rstrip('\n')
+while True:
+	roomTemp()
+	roomHumid()
+	soilTemp()
