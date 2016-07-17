@@ -9,15 +9,15 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 #init  pins for the relay, these will need to be labeled on the outlets for easy hookup
-lightRelay = 2
+lightRelay = 9
 GPIO.setup(lightRelay,GPIO.OUT)
 GPIO.output(lightRelay,GPIO.HIGH)
 
-pumpRelay = 3
+pumpRelay = 10
 GPIO.setup(pumpRelay,GPIO.OUT)
 GPIO.output(pumpRelay,GPIO.HIGH)
 
-fanRelay = 4
+fanRelay = 22
 GPIO.setup(fanRelay,GPIO.OUT)
 GPIO.output(fanRelay,GPIO.HIGH)
 
@@ -75,16 +75,32 @@ def setColor(rgb = []):
 	GREEN.ChangeDutyCycle(rgb[1])
 	BLUE.ChangeDutyCycle(rgb[2])
 
+def lightPoll():
+	if growLocation.previous_rising(ephem.Sun()) <= growLocation.date <= growLocation.next_setting(ephem.Sun()):
+		pinControl(lightRelay, 1)
+		print("Day")
+	elif growLocation.previous_setting(ephem.Sun()) <= growLocation.date <= growLocation.next_rising(ephem.Sun()):
+		pinControl(lightRelay,0)
+		print("Night")
+	return
+
+def pinControl(arg, state):
+	if state == 1:
+		GPIO.output(arg, GPIO.LOW)
+	elif state == 0:
+		GPIO.output(arg, GPIO.HIGH)
+	return
+
 def roomTemp():
 	arduino.write('1'.encode())
 	data = float(arduino.readline().strip())
 	if data:
 		currentRoomTemp = data
 		if currentRoomTemp > targetRoomTemp:
-			GPIO.output(fanRelay, GPIO.LOW)
+			pinControl(fanRelay, 1)
 		elif currentRoomTemp < targetRoomTemp:
-			GPIO.output(fanRelay, GPIO.HIGH)
-		print (currentRoomTemp)
+			pinControl(fanRelay, 0)
+		print ("Room temperature: " + str(currentRoomTemp))
 	return
 
 def roomHumid():
@@ -93,10 +109,10 @@ def roomHumid():
 	if data:
 		currentRoomHumidity = data
 		if currentRoomHumidity > targetRoomHumidity:
-			GPIO.output(fanRelay, GPIO.LOW)
+			pinControl(fanRelay, 1)
 		elif currentRoomHumidity < targetRoomHumidity:
-			GPIO.output(fanRelay, GPIO.HIGH)
-		print (currentRoomHumidity)
+			pinControl(fanRelay, 0)
+		print ("Room humidity: " + str(currentRoomHumidity))
 	return
 
 def soilMoisture():
@@ -105,15 +121,16 @@ def soilMoisture():
 	if data:
 		currentSoilMoisture = data
 		if currentSoilMoisture > targetSoilMoisture:
-			GPIO.output(pumpRelay, GPIO.LOW)
+			pinControl(pumpRelay, 1)
 			setColor([255,0,0])
 		elif currentSoilMoisture <= targetSoilMoisture:
 			setColor([0,255,0])
-			GPIO.output(pumpRelay, GPIO.HIGH)
-		print (currentSoilMoisture)
+			pinControl(pumpRelay, 0)
+		print ("Soil moisture: " + str(currentSoilMoisture))
 	return
 
 while True:
 	roomTemp()
 	roomHumid()
 	soilMoisture()
+	lightPoll()
