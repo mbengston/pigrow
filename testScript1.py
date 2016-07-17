@@ -53,16 +53,15 @@ sunsetNautical = growLocation.next_setting(sun)
 
 #This number changes depending upon stage of growth generally between 70 and 40%
 targetRoomHumidity = 70	
+currentRoomHumidity = 0
 #26-30 deg C generally.
 targetRoomTemp = 28
+currentRoomTemp = 0
 #readings between 541 when fully sumberged and 1023 when dry, do not know what this value should be
 targetSoilMoisture = 895
+currentSoilMoisture = 0
 #Photosynthisis of CO2 no longer occurs over 35 C
 DANGERTEMP = 35.
-
-roomHumidity = 0
-roomTemp = 0
-soilMoisture = 0
 
 #length to sleep between each poll
 SleepTimeL = 2
@@ -78,26 +77,33 @@ def setColor(rgb = []):
 
 def roomTemp():
 	arduino.write('1'.encode())
-	data = arduino.readline()
+	data = float(arduino.readline().strip())
 	if data:
-		print (data)
+		currentRoomTemp = data
+		print (currentRoomTemp)
 	return
 
 def roomHumid():
 	arduino.write('2'.encode())
-	data = arduino.readline()
+	data = float(arduino.readline().strip())
 	if data:
-		print (data)
+		currentRoomHumidity = data
+		print (currentRoomHumidity)
 	return
 
-def soilTemp():
+def soilMoisture():
 	arduino.write('3'.encode())
-	data = arduino.readline()
+	data = int(arduino.readline().strip())
 	if data:
-		print (data)
+		currentSoilMoisture = data
+		if currentSoilMoisture > targetSoilMoisture:
+			GPIO.output(pumpRelay, GPIO.LOW)
+		elif currentSoilMoisture <= targetSoilMoisture:
+			GPIO.output(pumpRelay, GPIO.HIGH)
+		print (currentSoilMoisture)
 	return
 
 while True:
 	roomTemp()
 	roomHumid()
-	soilTemp()
+	soilMoisture()
