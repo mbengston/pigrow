@@ -9,15 +9,15 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 #init  pins for the relay, these will need to be labeled on the outlets for easy hookup
-lightRelay = 2
+lightRelay = 9
 GPIO.setup(lightRelay,GPIO.OUT)
 GPIO.output(lightRelay,GPIO.HIGH)
 
-pumpRelay = 3
+pumpRelay = 10
 GPIO.setup(pumpRelay,GPIO.OUT)
 GPIO.output(pumpRelay,GPIO.HIGH)
 
-fanRelay = 4
+fanRelay = 22
 GPIO.setup(fanRelay,GPIO.OUT)
 GPIO.output(fanRelay,GPIO.HIGH)
 
@@ -84,7 +84,7 @@ def roomTemp():
 			GPIO.output(fanRelay, GPIO.LOW)
 		elif currentRoomTemp < targetRoomTemp:
 			GPIO.output(fanRelay, GPIO.HIGH)
-		print (currentRoomTemp)
+		print ("Room temperature: " + str(currentRoomTemp))
 	return
 
 def roomHumid():
@@ -96,7 +96,7 @@ def roomHumid():
 			GPIO.output(fanRelay, GPIO.LOW)
 		elif currentRoomHumidity < targetRoomHumidity:
 			GPIO.output(fanRelay, GPIO.HIGH)
-		print (currentRoomHumidity)
+		print ("Room humidity: " + str(currentRoomHumidity))
 	return
 
 def soilMoisture():
@@ -110,7 +110,7 @@ def soilMoisture():
 		elif currentSoilMoisture <= targetSoilMoisture:
 			setColor([0,255,0])
 			GPIO.output(pumpRelay, GPIO.HIGH)
-		print (currentSoilMoisture)
+		print ("Soil moisture: " + str(currentSoilMoisture))
 	return
 
 while True:
