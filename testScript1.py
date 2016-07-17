@@ -75,15 +75,22 @@ def setColor(rgb = []):
 	GREEN.ChangeDutyCycle(rgb[1])
 	BLUE.ChangeDutyCycle(rgb[2])
 
+def pinControl(arg, state):
+	if state == 1:
+		GPIO.output(arg, GPIO.LOW)
+	elif state == 0:
+		GPIO.output(arg, GPIO.HIGH)
+	return
+
 def roomTemp():
 	arduino.write('1'.encode())
 	data = float(arduino.readline().strip())
 	if data:
 		currentRoomTemp = data
 		if currentRoomTemp > targetRoomTemp:
-			GPIO.output(fanRelay, GPIO.LOW)
+			pinControl(fanRelay, 1)
 		elif currentRoomTemp < targetRoomTemp:
-			GPIO.output(fanRelay, GPIO.HIGH)
+			pinControl(fanRelay, 0)
 		print ("Room temperature: " + str(currentRoomTemp))
 	return
 
@@ -93,9 +100,9 @@ def roomHumid():
 	if data:
 		currentRoomHumidity = data
 		if currentRoomHumidity > targetRoomHumidity:
-			GPIO.output(fanRelay, GPIO.LOW)
+			pinControl(fanRelay, 1)
 		elif currentRoomHumidity < targetRoomHumidity:
-			GPIO.output(fanRelay, GPIO.HIGH)
+			pinControl(fanRelay, 0)
 		print ("Room humidity: " + str(currentRoomHumidity))
 	return
 
@@ -105,11 +112,11 @@ def soilMoisture():
 	if data:
 		currentSoilMoisture = data
 		if currentSoilMoisture > targetSoilMoisture:
-			GPIO.output(pumpRelay, GPIO.LOW)
+			pinControl(pumpRelay, 1)
 			setColor([255,0,0])
 		elif currentSoilMoisture <= targetSoilMoisture:
 			setColor([0,255,0])
-			GPIO.output(pumpRelay, GPIO.HIGH)
+			pinControl(pumpRelay, 0)
 		print ("Soil moisture: " + str(currentSoilMoisture))
 	return
 
