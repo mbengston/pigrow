@@ -45,12 +45,6 @@ growLocation.lat = '47.060045'
 growLocation.lon = '-122.9286967'
 growLocation.elevation = 95
 
-sun = ephem.Sun()
-sunrise = growLocation.next_rising(sun)
-sunset = growLocation.next_setting(sun)
-sunriseNautical = growLocation.next_rising(sun)
-sunsetNautical = growLocation.next_setting(sun)
-
 #This number changes depending upon stage of growth generally between 70 and 40%
 targetRoomHumidity = 70	
 currentRoomHumidity = 0
