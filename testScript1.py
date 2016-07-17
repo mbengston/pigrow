@@ -80,6 +80,10 @@ def roomTemp():
 	data = float(arduino.readline().strip())
 	if data:
 		currentRoomTemp = data
+		if currentRoomTemp > targetRoomTemp:
+			GPIO.output(fanRelay, GPIO.LOW)
+		elif currentRoomTemp < targetRoomTemp:
+			GPIO.output(fanRelay, GPIO.HIGH)
 		print (currentRoomTemp)
 	return
 
@@ -88,6 +92,10 @@ def roomHumid():
 	data = float(arduino.readline().strip())
 	if data:
 		currentRoomHumidity = data
+		if currentRoomHumidity > targetRoomHumidity:
+			GPIO.output(fanRelay, GPIO.LOW)
+		elif currentRoomHumidity < targetRoomHumidity:
+			GPIO.output(fanRelay, GPIO.HIGH)
 		print (currentRoomHumidity)
 	return
 
@@ -98,7 +106,9 @@ def soilMoisture():
 		currentSoilMoisture = data
 		if currentSoilMoisture > targetSoilMoisture:
 			GPIO.output(pumpRelay, GPIO.LOW)
+			setColor([255,0,0])
 		elif currentSoilMoisture <= targetSoilMoisture:
+			setColor([0,255,0])
 			GPIO.output(pumpRelay, GPIO.HIGH)
 		print (currentSoilMoisture)
 	return
