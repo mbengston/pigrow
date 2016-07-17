@@ -76,39 +76,19 @@ def setColor(rgb = []):
 	GREEN.ChangeDutyCycle(rgb[1])
 	BLUE.ChangeDutyCycle(rgb[2])
 
+def roomTemp():
+	arduino.write('1')
+	return
 
-#main loop
-while True:
-	data = arduino.readline()[:-2] #the last bit gets rid of the new-line chars
+def roomHumid():
+	arduino.write('2')
+	return
+
+def soilTemp():
+	arduino.write('3')
+	return
+
+white True:
+	data = arduino.readLine()
 	if data:
-		print data
-
-
-task = "Room Temp"
-arduino.write(task.encode())
-time.sleep(0.01)
-roomTemp = arduino.readline()
-int(roomTemp.decode())
-print(roomTemp)
-if roomTemp > targetRoomTemp :	#FIX ME cannot compare bytes()  > int()
-	GPIO.output(fanRelay, GPIO.LOW)
-elif roomTemp < targetRoomTemp :	#FIX ME cannot compare bytes()  > int()
-	GPIO.output(fanRelay,GPIO.HIGH)
-elif roomTemp >= DANGERTEMP:	#FIX ME cannot compare bytes()  > int()
-	GPIO.output(fanRelay,GPIO.LOW)
-task ="Room Humidity"
-arduino.write(task.encode())
-time.sleep(0.01)
-roomHumidity = arduino.readline()
-print(roomHumidity)
-if roomHumidity > targetRoomHumidity:	#FIX ME cannot compare bytes()  > int()
-	print("Room humidity is too high")
-task = "Soil Moisture"
-arduino.write(task.encode())
-time.sleep(0.01)
-soilMoisture = arduino.readline()
-print(soilMoisture)
-if soilMoisture < targetSoilMoisture:	#FIX ME cannot compare bytes()  > int()
-	GPIO.output(pumpRelay,GPIO.LOW)
-elif soilMoisture > targetSoilMoisture:	#FIX ME cannot compare bytes()  > int()
-	GPIO.output(pumpRelay,GPIO.HIGH)
+		print data.rstrip('\n')
