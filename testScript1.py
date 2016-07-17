@@ -37,7 +37,7 @@ GPIO.setup(blue, GPIO.OUT)
 BLUE = GPIO.PWM(blue, 100)
 BLUE.start(0)
 
-ser = serial.Serial('/dev/ttyS0', 9600)
+arduino = serial.Serial('/dev/ttyS0', 9600)
 
 #### TODO ##### Prompt user for desired grow city. Need to find API to covert city to GPS coords
 growLocation = ephem.Observer()
@@ -76,33 +76,19 @@ def setColor(rgb = []):
 	GREEN.ChangeDutyCycle(rgb[1])
 	BLUE.ChangeDutyCycle(rgb[2])
 
+def roomTemp():
+	arduino.write('1')
+	return
 
-#main loop
-task = "Room Temp"
-ser.write(task.encode())
-time.sleep(0.01)
-roomTemp = ser.readline()
-int(roomTemp.decode())
-print(roomTemp)
-if roomTemp > targetRoomTemp :	#FIX ME cannot compare bytes()  > int()
-	GPIO.output(fanRelay, GPIO.LOW)
-elif roomTemp < targetRoomTemp :	#FIX ME cannot compare bytes()  > int()
-	GPIO.output(fanRelay,GPIO.HIGH)
-elif roomTemp >= DANGERTEMP:	#FIX ME cannot compare bytes()  > int()
-	GPIO.output(fanRelay,GPIO.LOW)
-task ="Room Humidity"
-ser.write(task.encode())
-time.sleep(0.01)
-roomHumidity = ser.readline()
-print(roomHumidity)
-if roomHumidity > targetRoomHumidity:	#FIX ME cannot compare bytes()  > int()
-	print("Room humidity is too high")
-task = "Soil Moisture"
-ser.write(task.encode())
-time.sleep(0.01)
-soilMoisture = ser.readline()
-print(soilMoisture)
-if soilMoisture < targetSoilMoisture:	#FIX ME cannot compare bytes()  > int()
-	GPIO.output(pumpRelay,GPIO.LOW)
-elif soilMoisture > targetSoilMoisture:	#FIX ME cannot compare bytes()  > int()
-	GPIO.output(pumpRelay,GPIO.HIGH)
+def roomHumid():
+	arduino.write('2')
+	return
+
+def soilTemp():
+	arduino.write('3')
+	return
+
+white True:
+	data = arduino.readLine()
+	if data:
+		print data.rstrip('\n')
