@@ -93,14 +93,14 @@ def setColor(rgb = []):
 	BLUE.ChangeDutyCycle(rgb[2])
 
 def lightPoll():
-	if growLocation.previous_rising(ephem.Sun()) <= growLocation.date <= growLocation.next_setting(ephem.Sun()):
+	if growLocation.previous_rising(ephem.Sun()) > growLocation.previous_setting(ephem.Sun()):
 		pinControl(lightRelay, 1)
 		daylight=1
 		print("Day")
-	elif growLocation.previous_setting(ephem.Sun()) <= growLocation.date <= growLocation.next_rising(ephem.Sun()):
+	else:
 		pinControl(lightRelay,0)
 		daylight=0
-		print("Night")
+		print("Night")		
 	return daylight
 
 def roomTemp():
