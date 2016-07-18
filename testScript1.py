@@ -40,23 +40,14 @@ BLUE.start(0)
 
 arduino = serial.Serial('/dev/ttyS0', 9600)
 
-#### TODO ##### Prompt user for desired grow city. Need to find API to covert city to GPS coords
-growLocation = ephem.Observer()
-growLocation.lat = '47.060045' 
-growLocation.lon = '-122.9286967'
-growLocation.elevation = 95
-
-daylight = 0
+daylight = False
 
 #This number changes depending upon stage of growth generally between 70 and 40%
 targetRoomHumidity = 70	
-currentRoomHumidity = 0
 #26-30 deg C generally.
 targetRoomTemp = 28
-currentRoomTemp = 0
 #readings between 541 when fully sumberged and 1023 when dry, do not know what this value should be
 targetSoilMoisture = 895
-currentSoilMoisture = 0
 #Photosynthisis of CO2 no longer occurs over 35 C
 DANGERTEMP = 35.
 
@@ -92,15 +83,19 @@ def setColor(rgb = []):
 	GREEN.ChangeDutyCycle(rgb[1])
 	BLUE.ChangeDutyCycle(rgb[2])
 
-def lightPoll():
-	if growLocation.previous_rising(ephem.Sun()) > growLocation.previous_setting(ephem.Sun()):
+def lightPoll(growLoc):
+	#### TODO ##### Prompt user for desired grow city. Need to find API to covert city to GPS coords
+	growLoc = ephem.Observer()
+	growLoc.lat = '35.6895' # '47.060045'
+	growLoc.lon = '139.6917' #'-122.9286967'
+	growLoc.elevation = 95
+	daylight = growLoc.previous_rising(ephem.Sun()) > growLoc.previous_setting(ephem.Sun())
+	if daylight == True:
 		pinControl(lightRelay, 1)
-		daylight=1
 		print("Day")
 	else:
 		pinControl(lightRelay,0)
-		daylight=0
-		print("Night")		
+		print("Night")
 	return daylight
 
 def roomTemp():
@@ -124,7 +119,7 @@ def roomHumid():
 			pinControl(fanRelay, 1)
 		elif currentRoomHumidity < targetRoomHumidity:
 			pinControl(fanRelay, 0)
-			print ("Room humidity: " + str(currentRoomHumidity))
+		print ("Room humidity: " + str(currentRoomHumidity))
 	return currentRoomHumidity
 
 def soilMoisture():
@@ -138,8 +133,14 @@ def soilMoisture():
 		elif currentSoilMoisture <= targetSoilMoisture:
 			setColor([0,255,0])
 			pinControl(pumpRelay, 0)
-			print ("Soil moisture: " + str(currentSoilMoisture))
+		print ("Soil moisture: " + str(currentSoilMoisture))
 	return currentSoilMoisture
 
 while True:
-	dbInsert(growLocation.date, roomTemp(), roomHumid(),soilMoisture(),lightPoll())
+	growLocation = ephem.Observer()
+	growLocation.lat = '28.2101' # '47.060045'
+	growLocation.lon = '-177.3761' #'-122.9286967'
+	growLocation.elevation = 95
+	now = growLocation.date
+	print(now)
+	dbInsert(now, roomTemp(), roomHumid(),soilMoisture(),lightPoll(growLocation))
