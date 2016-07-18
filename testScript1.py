@@ -1,9 +1,10 @@
 #!/usr/bin/python
 import RPi.GPIO as GPIO
-import datetime
-import time
+from pymongo import MongoClient
 import ephem
 import serial
+import datetime
+import time
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -45,6 +46,8 @@ growLocation.lat = '47.060045'
 growLocation.lon = '-122.9286967'
 growLocation.elevation = 95
 
+daylight = 0
+
 #This number changes depending upon stage of growth generally between 70 and 40%
 targetRoomHumidity = 70	
 currentRoomHumidity = 0
@@ -57,10 +60,30 @@ currentSoilMoisture = 0
 #Photosynthisis of CO2 no longer occurs over 35 C
 DANGERTEMP = 35.
 
-#length to sleep between each poll
-SleepTimeL = 2
+client = MongoClient('mongodb://localhost:27017/')
+db = client['local']
+collection = db['local']
+startlog = db.startup_log
+startlog.find_one()
 
-task = "none"
+#define some CRUD
+def dbInsert(recTime,roomT,roomH,soilM,lights):
+	db.sensorpolls.insert_one(
+		{
+			"time": recTime,
+			"roomtemperature": roomT,
+			"roomhumidity": roomH,
+			"soilmoisure": soilM,
+			"lights": lights
+		}	
+	)	
+
+def pinControl(arg, state):
+	if state == 1:
+		GPIO.output(arg, GPIO.LOW)
+	elif state == 0:
+		GPIO.output(arg, GPIO.HIGH)
+	return
 
 def setColor(rgb = []):
 	#convert 0-255 range to 0-100.
@@ -72,18 +95,13 @@ def setColor(rgb = []):
 def lightPoll():
 	if growLocation.previous_rising(ephem.Sun()) <= growLocation.date <= growLocation.next_setting(ephem.Sun()):
 		pinControl(lightRelay, 1)
+		daylight=1
 		print("Day")
 	elif growLocation.previous_setting(ephem.Sun()) <= growLocation.date <= growLocation.next_rising(ephem.Sun()):
 		pinControl(lightRelay,0)
+		daylight=0
 		print("Night")
-	return
-
-def pinControl(arg, state):
-	if state == 1:
-		GPIO.output(arg, GPIO.LOW)
-	elif state == 0:
-		GPIO.output(arg, GPIO.HIGH)
-	return
+	return daylight
 
 def roomTemp():
 	arduino.write('1'.encode())
@@ -95,7 +113,7 @@ def roomTemp():
 		elif currentRoomTemp < targetRoomTemp:
 			pinControl(fanRelay, 0)
 		print ("Room temperature: " + str(currentRoomTemp))
-	return
+	return currentRoomTemp
 
 def roomHumid():
 	arduino.write('2'.encode())
@@ -106,8 +124,8 @@ def roomHumid():
 			pinControl(fanRelay, 1)
 		elif currentRoomHumidity < targetRoomHumidity:
 			pinControl(fanRelay, 0)
-		print ("Room humidity: " + str(currentRoomHumidity))
-	return
+			print ("Room humidity: " + str(currentRoomHumidity))
+	return currentRoomHumidity
 
 def soilMoisture():
 	arduino.write('3'.encode())
@@ -120,11 +138,8 @@ def soilMoisture():
 		elif currentSoilMoisture <= targetSoilMoisture:
 			setColor([0,255,0])
 			pinControl(pumpRelay, 0)
-		print ("Soil moisture: " + str(currentSoilMoisture))
-	return
+			print ("Soil moisture: " + str(currentSoilMoisture))
+	return currentSoilMoisture
 
 while True:
-	roomTemp()
-	roomHumid()
-	soilMoisture()
-	lightPoll()
+	dbInsert(growLocation.date, roomTemp(), roomHumid(),soilMoisture(),lightPoll())
