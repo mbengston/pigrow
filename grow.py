@@ -7,7 +7,7 @@ import datetime
 
 now = datetime.datetime.now()
 
-Grow will require the follow;
+#Grow will require the follow;
 # name - title of this grow which will be unique in DB
 # location - location to try and match weather patterns
 # strain - strain for the database
