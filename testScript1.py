@@ -8,8 +8,8 @@ import datetime
 import time
 
 keyfile = open('owmapi', 'r')
-API_key=keyfile.readline().rstrip()
-owm = pyowm.OWM(API_key)
+API_owm=keyfile.readline().rstrip()
+owm = pyowm.OWM(API_owm)
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -17,15 +17,12 @@ GPIO.setwarnings(False)
 #init  pins for the relay, these will need to be labeled on the outlets for easy hookup
 lightRelay = 9
 GPIO.setup(lightRelay,GPIO.OUT)
-GPIO.output(lightRelay,GPIO.HIGH)
 
 pumpRelay = 10
 GPIO.setup(pumpRelay,GPIO.OUT)
-GPIO.output(pumpRelay,GPIO.HIGH)
 
 fanRelay = 22
 GPIO.setup(fanRelay,GPIO.OUT)
-GPIO.output(fanRelay,GPIO.HIGH)
 
 #LED Pins setup and initalization
 red = 25
@@ -52,9 +49,9 @@ targetRoomHumidity = 70
 #26-30 deg C generally.
 targetRoomTemp = 28
 #readings between 541 when fully sumberged and 1023 when dry, do not know what this value should be
-targetSoilMoisture = 895
+targetSoilMoisture = 512
 #Photosynthisis of CO2 no longer occurs over 35 C
-DANGERTEMP = 35.
+DANGERTEMP = 35
 
 client = MongoClient('mongodb://localhost:27017/')
 db = client['local']
