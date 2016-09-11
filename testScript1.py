@@ -49,7 +49,7 @@ targetRoomHumidity = 70
 #26-30 deg C generally.
 targetRoomTemp = 28
 #readings between 541 when fully sumberged and 1023 when dry, do not know what this value should be
-targetSoilMoisture = 512
+targetSoilMoisture = 768
 #Photosynthisis of CO2 no longer occurs over 35 C
 DANGERTEMP = 35
 
