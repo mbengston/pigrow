@@ -7,7 +7,7 @@ import datetime
 
 now = datetime.datetime.now()
 
-#Grow will require the follow;
+# Grow will require the follow;
 # name - title of this grow which will be unique in DB
 # location - location to try and match weather patterns
 # strain - strain for the database
@@ -56,7 +56,7 @@ class Grow(object ):
 # Returns current target humidity level using date planted.
 # Requires specification of clone of seed
 	def targetHumidity( self ):
-		# If starting from a clone use these humidity values
+# If starting from a clone use these humidity values
 		if self.starter == "clone":
 			if now < self.planted + datetime.timedelta( 14 ):
 				self.targetHumidity = 0.70
@@ -72,7 +72,7 @@ class Grow(object ):
 				self.targetHumidity = 0.45
 			else:
 				self.targetHumidity = 0.40
-		# If we're starting from seedling these moisture values
+# If we're starting from seedling these moisture values
 		else:
 			if now < self.planted + datetime.timedelta( 14 ):
 				self.targetHumidity = 0.60
@@ -88,17 +88,17 @@ class Grow(object ):
 
 # This is going to change, for right now it is sufficient
 	def targetTemperature( self ):
-		# Growth
+# Growth
 		if now < self.planted + datetime.timedelta( 14 ):
 			self.tempMin = 20 #Celcius
 			self.tempMax = 28
 			self.tempDiff = 5
-		# Veg
+# Veg
 		elif now < self.planted + datetime.timedelta( 63 ):
 			self.tempMin = 20
 			self.tempMin = 28
 			self.tempDiff = 10
-		# Flowering
+# Flowering
 		else:
 			self.tempMin = 23
 			self.tempMax = 28
